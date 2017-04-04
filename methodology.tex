@@ -1,0 +1,367 @@
+\section{Methodology}
+
+
+%<---------------- NAIVE DIVERSIFICATION METHODOLOGY ----------------------------------------->
+\subsection{Mean-Variance and Naive Diversification}\label{naive}
+
+The traditional mean-variance framework presented in \cite{Markowitz1952} is still the most used approach in the financial industry. However, estimation theory has proven that this framework produces optimal portfolio weights that change quite dramatically over time due to the absence of large datasets. Several approaches have been proposed in order to stabilize or shrink the covariance matrix. These minimum-risk approaches do not rely on the estimation of expected returns and only focus on risk.  \\
+
+In several studies, Platen (see \cite{Platen2006}, \cite{Platen2009}, \cite{Platen2010}) proposes an alternative to Markowitz-based strategies relying on naive diversification. This diversification is deemed to approximate the ``ideal'' numeraire portfolio, which maximizes the logarithmic utility function of an investor and thus dominates any other strictly positive portfolio over a long period of time.  \cite{Platen2010} shows that when the number of assets tends towards infinity, the equally-weighted portfolio converges to the numeraire portfolio. This robust approach is consistent and does not imply any asset returns model. 
+Moreover, even after deduction of transaction costs, such portfolios significantly dominate corresponding market-weighted assets, thus empirically proving the asymptotic behavior of the numeraire ``proxies''.
+
+%<-------------------------------------------------------------------------------------------->
+
+%<---------------- RANDOM MATRIX THEORY METHODOLOGY ------------------------------------------>
+\subsection{Random Matrix Theory}\label{sec:RMT}
+
+%<-------------------------------------------------------------------------------------------->
+\subsubsection{Overview}
+The study of statistical factors inherent to asset returns has a long history in finance. Since the seminal paper of \cite{Markowitz1952}, using volatility (or variance) as a risk measure has become standard. The additive property of variance in uncorrelated markets, enables an easily identification of the sources of risk within a portfolio:
+\begin{equation*}
+  Var(R_p) = \Sum_{i=1}^N Var(w_i R_i)
+\end{equation*}
+where $R_p$ is the portfolio returns and $R_i$ the returns of asset $i$, with a weight $w_i$ in the portfolio. 
+
+However financial assets do display correlation and one often recourse to the principal component analysis in order to extract uncorrelated sources of risk. To this purpose we decompose the covariance matrix $\Sigma$ of asset returns:
+\begin{equation*}
+  \Epcatr \Sigma \Epca \equiv \Lambda
+\end{equation*}
+where $\Lambda \equiv \diag(\lambda_1, \dots, \lambda_N)$ is a diagonal matrix containing the eigenvalues of $\Sigma$ and $E \equiv (e_1, \dots, e_N)$ are the corresponding eigenvectors (column-wise). These eigenvectors define $N$ uncorrelated factors, whose returns are defined by $\Rpca \equiv \Epcainv R$. The eigenvalues $\Lambda$ correspond to the variances of these uncorrelated factors.  \\
+
+In \cite{Bouchaud1997}, the authors showed that the minimum variance portfolio, has proposed by \cite{Markowitz1952}, displays the largest weight on the eigenvectors of the correlation matrix with the smallest eigenvalues. An effective empirical estimation of the correlation matrix thus turns out to be a complicated task but plays a major role in portfolio construction. \\
+
+If we consider $N$ assets with a number of observations $T$ not very large compared to $N$, one can expect that the estimation of the covariances will be ``noisy'', meaning that the empirical correlation matrix is to a large extent composed of random entries. We thus have to be careful when using empirical correlations in portfolio construction, above all in minimum-risk strategies. It is of utmost importance to design a procedure allowing to retain real information and removing noise from the eigenvalues and eigenvectors. 
+
+
+%<-------------------------------------------------------------------------------------------->
+\subsection{Theory}
+Random Matrix Theory (RMT) came up in the 50's and are also of interest in a portfolio construction context.
+Algorithms used in the context of optimal portfolio liquidation, trading off the risk and the impact cost rely on the inversion of the covariance matrix. Thus small or zero eigenvalues, are related to portfolios of assets that have nonzero returns but vanishing or low risk. Small samples or insufficient data lead to estimation errors that impact such portfolios. Random matrix techniques aim at solving this issue of small eigenvalues in the sample covariance matrix.  \\
+
+In their research paper, \cite{Laloux1999} propose to compare the properties of the empirical correlation matrix to a purely random matrix, retrieved from simulated independent returns. The identification of deviations from the random matrix helps detect the presence of true information. 
+
+%<-------------------------------------------------------------------------------------------->
+\subsubsection{Random correlation matrices}
+
+Let us consider time series of $N$ assets, with $T$ observations. The elements of the empirical correlation matrix $\Corr$, of size $N \times N$, are given by
+\begin{equation*}
+  \Corr_{ij} = \Frac{1}{N} \Sum_{t=1}^T \tilde{r}_{it} \tilde{r}_{jt}
+\end{equation*}  
+where $\tilde{r}_{it}$ denotes the return of asset $i$ at time $t$, normalized by volatility such that $\mathbb{V}ar\lbrack\tilde{r}_{it}\rbrack = 1$. If we use the matrix form the correlation matrix can written as
+\begin{equation*}
+  \Corr = \tilde{R} \tilde{R}^\mathsf{T}
+\end{equation*}  
+where $\tilde{R}$ defines the $N \times T$ matrix whose rows correspond to the returns observations for each asset. 
+
+
+\begin{theorem}[Marchenko-Pastur theorem]
+\label{marchenko_pastur_theorem}
+In random matrix theory, the asymptotic behavior of eigenvalues of large rectangular random matrices are described by the Marchenko-Pastur distribution. Let $X$ denotes a $M \times N$ random matrix whose entries are independently identically distributed random variables with mean 0 and finite variance. 
+$Y_N = N^{-1}XX^T$ and let $\lambda_1, \lambda_2, \dots, \lambda_M$ be the eigenvalues of $Y_N$. Consider the random spectral measure
+$$
+  \mu_M(A) = \frac{1}{M} \Sum_{j=1}^M \delta_{\lambda_j \in A}, \quad A \in \R. 
+$$
+ 
+Assume that $M, N \to \infty$ so that the ratio $M/N \to \lambda \in (0, +\infty)$. Then $\mu_M {\overset{d}{\longrightarrow} \mu$, where 
+\[
+    \mu_A = \left\{
+               \begin{array}{llr}
+                 (1 - \frac{1}{\lambda}) \I_{0 \in A} + \nu(A), & \text{if } \lambda > 1 \\
+                 \nu(A), & \text{if } 0 \leq \lambda \leq 1,
+               \end{array}
+            \right.
+\]
+
+and
+\begin{align*}
+  d\nu(x) &= \Frac{1}{2\pi\sigma^2} \Frac{\sqrt{\lambda_{\text{max}} - x) (x - \lambda_{\text{min}})}}{\lambda x} \I_{[\lambda_{min}, \lambda_{max}]} dx \\
+  \lambda^{{\text{max}}}_{\text{min}} &= (1 \pm \sqrt{\lambda})^2 \sigma^2
+\end{align*}
+
+\end{theorem}
+
+We can now apply the theorem defined in (\ref{marchenko_pastur_theorem}) within a portfolio context, Let $\tilde{R}_t \sim \mathcal{N} (m, \I_N)$ denote the independently and normally distributed asset returns\footnote{Asset returns have been scaled to have $\sigma = 1$.} and $\Corr$ the empirical correlation matrix. \\
+
+We denote $\rho_{\Corr}(\lambda)$ the density of the eigenvalues of the correlation matrix $\Corr$, defined as:
+\begin{equation*}
+  \rho_{\Corr}(\lambda) = \Frac{1}{N} \Frac{dn(\lambda)}{d\lambda}
+\end{equation*}  
+where $n(\lambda)$ corresponds to the number of eigenvalues of the correlation matrix $\Corr$ that are less than $\lambda$. \\
+
+In \cite{Edelman1988}, the authors showed, as $N \to \infty$ and $T \to \infty$, with $Q = T/N \geq 1$, $\rho_{\Corr}(\lambda)$ is exactly known:
+
+\begin{align}
+\label{eigenvalues_distribution}
+  \rho_{\Corr}(\lambda) &= \Frac{Q}{2\pi\sigma^2} \Frac{\sqrt{\lambda_{\text{max}} - \lambda) (\lambda - \lambda_{\text{min}})}}{\lambda}, \\
+  \lambda^{{\text{max}}}_{\text{min}} &= (1 \pm \sqrt{1/Q})^2 \sigma^2
+\end{align}
+with $\lambda \in \lbrack \lambda_{\text{min}}, \lambda_{\text{max}}\rbrack$. As asset returns have been scaled the variance $\sigma^2$ is equal to 1. \\
+
+In the limit Q=1, \cite{Laloux1999} shows that the distribution of the normalized eigenvalues are given by \eqref{eigenvalues_distribution} and that important features can be extracted in the limit $N \to \infty$:
+\begin{itemize}
+  \item the lower boundary of the spectrum is strictly positive, except for Q=1; No eigenvalue displays a value between 0 and $\lambda_{\text{min}}$. In the neighborhood of this boundary, the density of eigenvalues exhibits a sharp maximum, except in the limit Q=1, corresponding to \lambda_{\text{min}}=0$, where it diverges as $\sim 1/\sqrt{\lambda}$.
+  \item the density of eigenvalues vanishes above $\lambda_{\text{max}}$
+\end{itemize}
+
+\begin{examp}
+Let us consider a simple example of $T=1000$ random asset returns ($N = 200$ assets), with constant variance $\sigma^2=1$. 
+\end{examp}
+\begin{figure}[!ht]
+  \centering
+  \includegraphics[width=\textwidth]{figure/toy_example_marchenko-1.pdf}
+  \caption{Eigenvalues distribution of 200 random assets}
+  \label{fig:toy_example_marchenko-1}
+\end{figure}
+
+When $N$ is finite, these particular features displayed in the neighborhood of the the boundaries are not sharp. There is still a small probability of finding eigenvalues below $\lambda_{\text{min}}$ and above $\lambda_{\text{max}}$. This probability vanishes when the number of observation $N$ becomes very large. 
+
+
+
+\begin{examp}
+We consider 75 stocks ($N$) in the S\&P500 index for which we have 200 observations($T$). We thus have $Q = T/N = 2.66$. We display the spectrum of eigenvalues and superimpose the Marchenko-Pastur density, with $Q=2.66$ and $\sigma^2=1$.
+\end{examp}
+\begin{figure}[!ht]
+  \centering
+  \includegraphics[width=\textwidth]{figure/sp_example-1.pdf}
+  \caption{Eigenvalues spectrum of 75 stocks in the S\&P500}
+  \label{fig:sp_example-1}
+\end{figure}
+
+We can observe that the highest eigenvalues are massively off the higher bound defined by the upper bound $\lambda_{\text{max}}$ and that the overall fit is not really satisfying. \\
+
+When we look at the corresponding eigenvectors, as expected,  we can notice that all components are roughly equal on all stocks, thus proving that the first component corresponds to a proxy for the market itself. We can reject the hypothesis of ``pure noise'' for the first principal component. Another conjecture would be to assume that the other principal components, that are de facto orthogonal to the market proxy, are pure noise.  \\
+
+To this purpose, we can subtract the contribution of $\lambda_{\text{max}}$ from the nominal value for $\sigma^2=1$, leading to $\sigma^2 = 1-\lambda_{\text{max}}/N = 0.94$. Figure~\ref{fig:sp_example_best_fit} displays the empirical distribution with this better fit for $\sigma^2$ (cyan line). 
+
+\begin{figure}[!ht]
+  \centering
+  \includegraphics[width=\textwidth]{figure/sp_example_best_fit-1.pdf}
+  \caption{S\&P500: Marchenko-Pastur density (best fit)}
+  \label{fig:sp_example_best_fit}
+\end{figure}
+
+We see that some eigenvalues are still above $\lambda_{\text{max}}$ and can thus be considered as information and reduces the random part of the correlation matrix. $\sigma^2$ can be considered as a parameter that we can adjust to optimize the fit. The best fit is obtained for $\sigma^2=0.44$ and corresponds to the red line in Figure~\ref{fig:sp_example_best_fit}. It accounts for roughly 95\% of the spectrum, while the remaining highest eigenvalues are still well above the upper threshold $\lambda_{\text{max}}$.  \\
+
+
+If we now randomize our asset returns, by shuffling the returns of each assets we obtain a spectrum of the eigenvalues that in the limit follows a Marchenko-Pastur density, as shown in Example \ref{ex_sp500_reshuffled}. 
+
+\begin{examp}\label{ex_sp500_reshuffled}
+We consider the same stocks but shuffle the time series of each asset and compute the corresponding asset values. We repeat this procedure 1'000 times and average the results. We can observe that the random returns are very well explained by the theoretical density.
+\end{examp}
+\begin{figure}[!ht]
+  \centering
+  \includegraphics[width=\textwidth, height=5cm]{figure/sp_example_reshuffled-1.pdf}
+  \caption{S\&P500: Reshuffled assets)}
+  \label{fig:sp_example_reshuffled}
+\end{figure}
+
+%<-------------------------------------------------------------------------------------------->
+
+
+%<---------------- MINIMUM-TORSION METHODOLOGY ----------------------------------------------->
+\subsection{Minimum-Torsion}\label{sec:min_torsion}
+
+Let us assume the price evolution $(S(t)=(S_1(t), \dots, S_{N}(t))_{t \in \nn}$ of 
+ given  $N \in \nn$ financial assets 
+ follows an adapted stochastic process taking values in $\rr^{N}$
+ realized on a filtered probability space $(\Omega, \cf, \PP, (\cf_{t})_{t \in \nn})$.
+If we denote by $\pi(t)=(\pi_1(t), \dots, \pi_N(t)$
+the vector of fractions of the wealth invested in the assets $i=1, \dots, N$ at time $t=0, 1,2\dots,$, 
+then, following  the self-financed strategy 
+determined by  $\pi=(\pi(t))_{t \in \nn}$,  the wealth $(S^{\pi}(t))_{t \in \nn}$ evolves as
+\begin{equation*}
+S^{\pi}(t+1)=S^{\pi}(t)(1+ \sum_{i=1}^N\pi_i(t) R_i(t+1)), \qquad t=0,1,2 \dots
+\end{equation*}
+with the so-called returns 
+\begin{equation*}
+  R_i(t+1)=(S_i(t+1)-S_i(t))/S_i(t), \qquad t\in \nn \, i=1, \dots, N
+\end{equation*}
+of the assets $i=1, \dots, N$. For instance the so-called {\it equally-weighted portfolio}
+suggests holding the same fraction of the wealth in each asset at any time 
+\begin{equation*}
+  \pi_i(t)=\frac{1}{N}, \quad t \in \nn, \, i=1, \dots, N.
+\end{equation*}
+The traditional mean-variance considerations on portfolio optimization is based on the 
+assumption that the mean vector and covariance matrix of the returns
+  $(R(t)=(R_i(t))_{i=1}^N )_{t \in \nn}$ do not change with time $t \in \nn$. Let us agree that $R:=R_1$ represents the distribution of the returns.
+The main ingredients for the calculation of optimal portfolio in the spirit of 
+Markowitz are the return covariances
+\begin{equation}\label{eqn:sigma}
+\Sigma={\rm Cov}(R), \qquad \sigma^2={\rm Var}(R)={\rm diag}^{-1}(\Sigma), 
+\end{equation}
+whose reliable estimation has attracted persistent attention in the literature.
+Given the covariance matrix $\Sigma$, the so-called principal component analysis (PCA) 
+is based on  diagonalization   $D=T \Sigma T^\top$ with  entries of the diagonal matrix $D$ given by the eigenvalues of  $\Sigma$
+whose orthonormal eigenvectors are rows of the  orthogonal matrix $T$. The so-called
+principal components are given by  $(T R(t))_{t \in \nn}$ which can be considered as 
+an approximation of the returns of the  synthetic assets $(TS(t))_{t \in \nn}$. Such linear transformation of the original price process $(T S(t))_{t \in \nn}$ to  $(TS(t))_{t \in \nn}$  whose components  have  uncorrelated returns can be  utilized  in the  portfolio optimization. However, the process $(TS(t))_{t \in \nn}$ may appear artificial. That is, to reach return uncorrelation, other  linear  transformations than  $T$  may be of interest, thus  we address the following question:
+\begin{equation} \left.
+\begin{array}{l}\label{eqn:prob}
+\text{determine a linear transformation $T^*: \rr^N \to \rr^N$ } \\
+\text{such that $T^* R$ are uncorrelated and the} \\
+\text{components of     $T^*R$ are close to those of  $R$  }
+\end{array} \right\} 
+\end{equation} 
+In what follows, we present an approach to this problem, in terms of an 
+algorithm which yields  a matrix $T^*$  solving (\ref{eqn:prob}), in certain sense. 
+\\[5pt]
+Given the return covariance matrix  $\Sigma$ and the vector $\sigma^2$  of variances as in (\ref{{eqn:sigma}), 
+ the solution to (\ref{eqn:prob}) is proposed
+in terms of minimizing the function
+\begin{equation}\label{eqn:torsion_func}
+f(T) = \sqrt{\frac{1}{N} \sum_{i=1}^N 
+	\frac{
+		{\rm Var} ((T R)_i - R_i )
+		}{
+			{\rm Var} ( R_i )
+		} }
+\end{equation}
+which is defined for each  $N \times N$ matrix $T$, and will be minimized 
+ subject to the un-correlation condition
+$$
+\text{ ${\rm Cov}(T R)$ is a diagonal matrix}
+$$
+Having introduced the random variable  $Z=(Z_1, \dots Z_N)$
+$$
+Z_i=\frac{ R_i} 
+   {{\rm Var}(R_i)^{1/2}
+   		} , \qquad i=1, \dots, N
+$$
+representing the distribution of the normalized returns, the function (\ref{eqn:torsion_func}) satisfies
+$$
+f^2( {\rm diag}(\sigma)^{-1} V  {\rm diag}(\sigma)):=g(V):={\rm tr}  ({\rm Cov}(VZ-Z))
+$$
+where the symbol ${\rm tr}$ denotes the normalized trace. Let us interpret 
+the problem (\ref{eqn:prob}) as that of   determining 
+$$
+V^*={\rm argmin} \{ V \mapsto g(V) \enspace \text{subject to  $ {\rm Cov}(VZ)
+	\in {\cal D} $ } \}
+$$ 
+where  ${\cal D}$ denotes all $N \times N$ diagonal matrices, followed by the transformation
+\begin{equation}\label{{eqn:diag_transf}}
+T^*={\rm diag}(\sigma)V^*{\rm diag}(\sigma)^{-1} 
+\end{equation}
+Based on  \cite{Meucci2013},
+we  present an algorithm,
+which recursively  generates a sequence $(V(k))_{k \in \nn}$ of matrices  such that
+$$
+\text{ $(g(V(k)))_{k \in \nn}$  is decreasing, and	${\rm Cov}(V(k)Z)
+\in {\cal D}$ for all $k \in \nn $}.
+$$ 
+Interrupting this sequence at appropriate step $k^* \in \nn$, we obtain 
+a matrix $V^*:=V(k^*)$ which provides a solution to the problem (\ref{eqn:prob}).
+\\[5pt]
+Let us rewrite the target function as
+\begin{eqnarray*}
+g(V)&=&{\rm tr}({\rm Cov}(VZ-Z)) \\&=&
+{\rm tr} ( V C^2V^\top - V C^2 - C^2 V^\top +C^2) \\
+&=&
+{\rm tr} ( V C^2V^\top -2 V C^2 )+ {\rm tr} (C^2)
+\end{eqnarray*}
+where $C={\rm Cov}(Z)^\frac{1}{2}$ represents the root of the  correlation matrix of the returns $R$. Since
+${\rm tr} (C^2)$ does not depend on $V$, we aim at 
+$$
+ \begin{array}{c}
+\text{  minimization of $V \mapsto {\rm tr} ( V C^2V^\top -2 V C^2 )$ }\\
+\text{subject to  $ {\rm Cov}(VZ)=VC^2V^\top
+	\in {\cal D} $ }.
+\end{array}
+$$
+Using the change of variables $\Pi=VC$, we equivalently address 
+\begin{equation*}
+\begin{array}{c}
+\text{  minimization of $\Pi \mapsto {\rm tr} ( \Pi \Pi^\top -2  C \Pi )$} \\
+\text{ subject to 
+	$ \Pi \Pi^{\top}
+	\in {\cal D} $ }.
+\end{array}
+\end{equation*}
+To satisfy the restriction $\Pi \Pi^{\top}
+\in {\cal D}$, the  matrix is represented using polar decomposition
+\begin{equation*} 
+\Pi=D U 
+\end{equation*}
+meaning that
+\begin{equation}\label{eqn:condU}
+\text{ $U$ is orthogonal  $U U^\top=\mathbf{1}$ } 
+\end{equation}
+and 
+\begin{equation}\label{eqn:condD}
+\text{	 $D \in {\cal D}$ is positive definite and diagonal.}
+\end{equation}
+With this decomposition, we address a separate minimization in $U$:
+\begin{equation*}
+\begin{array}{c}
+\text{  given $D$ as in (\ref{eqn:condD}), determine a minimizer to} \\
+\text{
+$U \mapsto {\rm tr} ( D^2 -2  C D U)$  subject to (\ref{eqn:condU})}
+\end{array} 
+\end{equation*}
+which is solved in terms of the  minimizer  
+\begin{eqnarray*}
+U&=&(DC^2D)^{-\frac{1}{2}} DC
+\end{eqnarray*}
+and a separate minimization in $D$:
+\begin{equation*}
+\begin{array}{c}
+\text{  given $U$ as in (\ref{eqn:condU}), determine a minimizer to} \\
+\text{
+	$D \mapsto {\rm tr} ( D^2 -2  C D U)$  subject to (\ref{eqn:condD})}
+\end{array} 
+\end{equation*}
+which is also solved with the minimizer
+\begin{eqnarray*}
+D&=&{\rm diag}^{-1}({\rm diag}(CU)^+).
+\end{eqnarray*}
+The  successive  alteration of both minimizations yields the  algorithm (\ref{table_minimum(t)orsion_algorithm})
+whose  details are given in  \cite{Meucci2013}.
+\label{minimum(t)orsion_algorithm}
+\begin{table}[!ht]
+	\centering
+	\begin{threeparttable}
+		\begin{tabular}{ |l|l|l| }
+			\hline
+			\multicolumn{3}{|c|}{Given square root $C$ of return correlation} \\
+			\hline
+			0. & Initialize & $D(0) \leftarrow \mathbf{1}$, $k\leftarrow 0$ \\
+			1. & Root and rotation & $U(k) \leftarrow (D(k)C^2C)^{-\frac{1}{2}} D(k)C$  \\
+			2. & Stretching &  $D(k) \leftarrow \diag(\diag^{-1}(U(k)C)^+)$ \\
+			3. & Perturbation & $\Pi(k) \leftarrow D(k)U(k)$ \\
+			4. & Interruption? & result $V^* \leftarrow \Pi(k) C^{-1}$ \\
+		    5 &  Continuation & set  $k \leftarrow k+1$ and go to 1. \\ 
+			\hline
+		\end{tabular}
+		\begin{tablenotes}[para,flushleft]
+		\end{tablenotes}
+		\caption{Minimum-Torsion algorithm}\label{table_minimum(t)orsion_algorithm}  
+	\end{threeparttable}
+\end{table}
+\\[5pt]
+Given the matrix $V^*$ returned by the  algorithm (\ref{table_minimum(t)orsion_algorithm}), 
+the  so called {\it  minimum-torsion matrix} $T^*$  is calculated from (\ref{{eqn:diag_transf}}) and is considered as a solution to the problem (\ref{eqn:prob}). With  the  matrix  $T^*$,   the optimization of portfolio can be addressed.
+ 
+
+%<-------------------------------------------------------------------------------------------->
+\subsubsection{Corrected-Benchmark Portfolio}\label{corrected_benchmark}
+
+In the spirit of risk-parity strategies, which  take correlations among assets into account we use the torsion matrix in order to correct the equally-weighted portfolio (naive diversification). We calculate the corrected weights by multiplying the portfolio weights $(w_i = \frac{1}{N})_{i=1}^N$ by the torsion matrix $T^*$ computed in (\ref{{eqn:diag_transf}}).  \\
+
+This transformation does not necessarily results in a fully invested portfolio. The difference can be either invested in cash or the weights can be scaled to add up to one. 
+This methodology results in a portfolio where  highly correlated assets are under-represented.
+We characterize the corrected-benchmark portfolio in  terms of wealth fractions 
+$\pi(t)=(\pi_{i}(t))_{i=1}^N$, invested in each asset $i=1, \dots, N$ at time
+$t \in \nn$ as 
+\begin{equation} \label{eqn:scaled_corrected}
+  \pi^\top(t)=w^{*\top} T^*/w^{*\top} T^* \vec{1} , \qquad t \in \nn.
+\end{equation}
+
+In  this formula, $w^{*\top} T^*$ stands for the wealth fractions, invested in risky assets given the un-correlation from minimum-torsion matrix $T^*$. According to this approach, only a fraction
+$ w^{*\top} T^* \vec{1} \in ]0, 1[$ of the wealth would be invested (Here $\vec{1}$ stands for the vector whose entries are equal to one). 
+In order to achieve a full investment of all available funds, we scale this portfolio appropriately, obtaining  (\ref{eqn:scaled_corrected}).
+A similar strategy can be obtained if short positions are not feasible, 
+\begin{equation}\label{eqn:scaled_corrected_1}
+  \pi^\top(t)=(w^{*\top} T^*)^+/(w^{*\top} T^*)^+ \vec{1} , \qquad t \in \nn. 
+\end{equation}
+Here we use $( \cdot )^+$ to denote a component-wise application of positive-part function. We examine the behavior of both (\ref{eqn:scaled_corrected}), (\ref{eqn:scaled_corrected_1}) portfolio strategies in an empirical study in Section~\ref{sec:case_study}.
+
+%<-------------------------------------------------------------------------------------------->

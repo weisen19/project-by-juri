@@ -1,0 +1,95 @@
+
+\section{Case Study}\label{sec:case_study}
+
+We consider 375 stocks (N) in the S\&P500 index for which we dispose of 1095 observations (T) covering the period from 2012/01 to 2016/05. \\
+
+A common study design is to split the sample into a training and an independent testing set, where the former is used to develop the model and the latter to evaluate its performance. \\
+Accordingly we start in a first step by analyzing the empirical histogram of the eigenvalues of the considered stocks over the first half of the period (2012/01-2013/12) and superimpose the theoretical Marchenko-Pastur density provided by the random matrix theory framework detailed in Section \ref{sec:RMT}. 
+
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=\textwidth,  height=6cm]{figure/eigenvalues_density.pdf}
+  \caption{Eigenvalues spectrum of the S\&P500 stocks}
+  \label{fig:density}
+\end{figure}
+
+Based on this analysis (Figure~\ref{fig:density}), we retain eigenvalues above $\lambda_{\text{max}}=2.262$ that are assumed to contain ``information'' and shrink the remaining ones that correspond to ``noise''. For the shrinkage procedure we follow \cite{Laloux1999} and replace the noisy eigenvalues with average value such that the trace of the covariance matrix remains unchanged. This results in a ``denoised'' covariance matrix that will be used to compute the {\it correction matrix}, given by the minimum-torsion methodology explained in Section~\ref{sec:min_torsion}. \\
+
+The following R code details the minimum-torsion algorithm:
+<<tidy=FALSE, tidy.opts=list(keep.blank.line=TRUE, width.cutoff=50), comment=NA, size='scriptsize'>>=
+# Compute the Minimum-Torsion Matrix
+minimum_torsion <- function(cov.matrix)
+{ # returns a matrix T such that sum (Var(TR − R)/Var(R))
+  # is minimal where R is a random vector with cov(R)=cov.matrix
+  # subject to entries of TR uncorrelated
+  
+  sigmas <- diag(cov.matrix)^(0.5)
+  # Correlation matrix
+  C2 <- diag(1/sigmas)%*%cov.matrix%*%diag(1/sigmas)      
+  
+  E <- eigen(C2)
+  # Square root of C2
+  C <- E$vectors %*% diag(E$values^(0.5)) %*% t(E$vectors)
+  # Inverse of C2
+  Cinv <- E$vectors %*% diag(E$values^(-0.5)) %*%         
+    t(E$vectors) 
+  # Requirements for break conditions
+  PIold <- C                                              
+  # Initialization
+  D <- diag(x = 1,
+            nrow = nrow(C),
+            ncol = ncol(C))                               
+  
+  repeat {
+    DC <- D %*% C
+    E <- eigen(DC %*% t(DC))
+    U <- E$vectors %*% diag(E$values^(-0.5)) %*% 
+      t(E$vectors) %*% DC
+    diagonal <- pmax(0, diag(U %*% C)) 
+    D <- diag(x = diagonal)
+    PI <- D %*% U
+    tolerance <- max(abs(PI - PIold))
+    PIold <- PI
+    V <- PI %*% Cinv
+            
+    # Convergence check: must be decreasing 
+    print(                                                  
+      sum(
+        diag(V %*% C2 %*% t(V) - V %*% C2 - C2 %*% V + C2)
+      )
+    ) 
+    if (tolerance < 0.00001)
+      break
+  }
+  
+  result <- diag(sigmas)%*%V%*%diag(1/sigmas)
+  return(result)
+}
+@
+
+In a second step, we used the torsion-matrix calibrated to the training sample and apply the corrected-benchmark strategy defined in (\ref{corrected_benchmark}) on the test sample covering the period 2014/01-2016/05. 
+Figure~\ref{fig:performance} compares the cumulative performance of the {\it naive strategy} (equally-weighted) to the {\it corrected-benchmark} approach. We also consider an alternative portfolio, where we impose a long-only constraint in order to deliver a fair comparison to the equally-weighted strategy. 
+
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=\textwidth,  height=6cm]{figure/plot_performance_test_denoise.pdf}
+  \caption{Cumulative performance}
+  \label{fig:performance}
+\end{figure}
+
+We can observe a similar dynamics of the three strategies, the unconstrained corrected-benchmark portfolio, where short positions are allowed, displays a better performance together with higher volatility. The constrained portfolio also slightly outperforms the naive diversification approach with comparable volatility. \\  
+
+In order to validate the multi-period approach, where we allow to rebalance the portfolio dynamically over time, we compare in Figure~\ref{fig:outperformance} the three strategies vs their buy-and-hold equivalent.
+
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=\textwidth,  height=6cm]{figure/plot_outperformance_test_denoise.pdf}
+  \caption{Outperformance vs. buy-and-hold portfolio}
+  \label{fig:outperformance}
+\end{figure}
+
+An astonishing pattern emerges from this figure, both the dynamic naive diversification approaches and the long-only corrected-benchmark strategy display an underperformance with regards to the buy-and-hold equivalent, whereas the corrected-benchmark strategy (constrained) moves from a cumulative outperformance of more than 6\% in mid June 2015 towards an underperformance of 2\% at the end of the testing period. 
+We also note that all strategies suffered a drawdown in the second half of 2015, with a dramatic collapse in performance of the unconstrained strategy.
+
+% These interesting features have to be explored further, in particular after having taken transaction costs into consideration. This motivates us to pursue our research in the direction of a time-modulation of various traditional strategies in order to stabilize the portfolio dynamics and deliver a consistent performance over time.
+% Moreover, several other techniques have to be tested and be further developed for ``denoising'' and estimating the covariance matrix.

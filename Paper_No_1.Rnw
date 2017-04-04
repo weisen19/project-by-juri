@@ -1,0 +1,174 @@
+\documentclass[a4paper,12pt]{article}
+%% Packages
+\usepackage{amssymb,amsfonts,amsmath,amsthm}
+\usepackage{color}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}%{realboxes}
+\usepackage{mathrsfs}
+\usepackage{threeparttable}
+\usepackage{pgfgantt}
+\usepackage{rotating}
+\usepackage{enumerate}
+\usepackage{titling}
+}
+\usepackage[numbers]{natbib}
+%% Commands
+\newcommand{\subtitle}[1]{%
+  \posttitle{%
+    \par\end{center}
+    \begin{center}\large#1\end{center}
+    \vskip0.5em}%
+}
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem{proposition}{Proposition}
+\newtheorem{definition}{Definition}
+\newtheorem{examp}{Example}[section]
+
+\setlength\parindent{0pt} % no indentation of paragraphs
+
+\newcommand{\pe}{\psi}
+% some definitions of bold math italics to make typing easier.
+% They are used in the corollary.
+\def\bfE{\mbox{\boldmath$E$}}
+\def\bfG{\mbox{\boldmath$G$}}
+\def\cE{{\mathcal E}}
+\def\cQ{{\mathcal Q}}
+\def\cS{{\mathcal S}}
+\def\f{\mathfrak }
+\def\b{\mathbb }
+\def\f{\mathfrak}
+\def\mathc{\mathcal }
+\def\EE{\mathbb E}
+\def\RR{\mathbb R}
+\def\NN{\mathbb N}
+\def\CC{\mathbb C}
+\def\PP{\mathbb P}
+\def\QQ{\mathbb Q}
+\def\MM{\mathbb M}
+\def\TT{\mathbb T}
+\def\ZZ{\mathbb Z}
+\def\cA{{\mathcal A}}
+\def\cE{{\mathcal E}}
+\def\cZ{{\mathcal Z}}
+\def\cf{{\mathcal F}}
+
+%\def\reff#1{(\ref#1)}
+%\def\ci{{\cal I}}
+%\def\L{{\Lambda}}
+%\def\l{{\lambda}}
+%\def\Lamb*{{L}}
+%\def\nor{{n}}
+%\def \pii{\pi}
+%\def \alpa{\alpha}
+\def \argmin{{\rm argmin}}
+\def \argmax{{\rm argmax}}
+\def\rr{\b R}
+\def\nn{\b N}
+\def\cc{\b C}
+\def\zz{\b Z}
+\def\qq{\b Q}
+%\def\mm{\b M}
+%\def\Lamb*{{L}}
+%\def\nor{{n}}
+%\def \pii{\pi}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% MATHS COMMANDS
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\def\x{\times}
+\def\pref#1{(\ref{#1})}
+\def\tr{{\rm tr}}
+\def\rank{{\rm rank}}
+
+% Operators
+\DeclareMathOperator{\R}{\mathbf{R}}
+\DeclareMathOperator{\diag}{diag}
+\DeclareMathOperator{\I}{\mathbb{I}}
+
+
+% PCA Eigenvectors
+\newcommand{\Epca}{\mathop{\mathsf{\mathbf{E}}}}
+\newcommand{\Epcatr}{\mathop{\mathsf{\mathbf{E}^\mathsf{T}}}}
+\newcommand{\Epcainv}{\mathop{\mathsf{\mathbf{E}}^{-1}}}
+% PCA scores
+\newcommand{\Rpca}{\mathop{\mathsf{\bar{\mathbf{R}}_{PCA}}}}
+
+% Min Torsion Factors
+\newcommand{\Fmt}{\mathop{\mathsf{\bar{\mathbf{F}}_{MT}}}}
+\newcommand{\Fmts}{\mathop{\mathsf{\bar{\mathbf{F}}_{MTS}}}}
+\newcommand{\Fmtstr}{\mathop{\mathsf{\bar{\mathbf{F}}^\mathsf{T}_{MTS}}}}
+\newcommand{\Fsmt}{\mathop{\mathsf{\bar{\mathbf{F}}_{SMT}}}}
+% Min Torsion Matrix
+\newcommand{\tmt}{\mathop{\mathsf{\bar{\mathbf{t}}_{MT}}}}
+\newcommand{\tmts}{\mathop{\mathsf{\bar{\mathbf{t}}_{MTS}}}}
+% Min Torsion Matrix approximation (Pi = Identity)
+\newcommand{\tmtapprox}{\mathop{\mathsf{\bar{\mathbf{t}}}}}
+
+% Min Torsion Matrix Inversed
+\newcommand{\tmtinv}{\mathop{\mathsf{\bar{\mathbf{t}}^{-1}_{MT}}}}
+% Portfolio Weights transposed
+\newcommand{\wtr}{\mathop{w^\mathsf{T}}}
+% Min Torsion Weights
+\newcommand{\wmt}{\mathop{\mathsf{\bar{\mathbf{w}}_{MT}}}}
+% Min Torsion Weights Transposed
+\newcommand{\wmttr}{\mathop{\mathsf{\bar{\mathbf{w}}^\mathsf{T}_{MT}}}}
+
+\DeclareMathOperator{\Corr}{\mathsf{C}}
+\DeclareMathOperator{\Cov}{\mathsf{\Sigma}}
+\newcommand{\Vola}{\sigma}
+
+% Sum, frac (display style)
+\newcommand{\Sum}{\mathop{\displaystyle \sum}}
+\newcommand{\Frac}[2]{\mathop{\displaystyle \frac{#1}{#2}}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+\begin{document}
+%	 
+%\begin{frontmatter}
+  \title{Alternative Diversification Strategies in the temporal asset allocation.}
+  \author{
+  	Juri Hinz and Marc Weibel\\ School of Mathematical and Physical Sciences\\  University of Technology Sydney\\ juri.hinz@uts.edu.au\\
+  	}
+%  
+%  \begin{keyword}
+%    \texttt{Approximate dynamic programming, partially observable Markov decisions, stochastic
+%      control}
+%  \end{keyword}
+%\end{frontmatter}
+\maketitle
+\begin{abstract}
+\noindent In this work, we examine the incremental role of adaptive temporal asset allocation on the performance of diverse traditional portfolio strategies which follow classical
+investment philosophies. Such strategies are popular in practice and achieve desired  statistical  properties, (growth stability, mean reversion), but are vulnerable to abrupt changes in the asset dynamics.\\
+
+\noindent We address its issue suggesting a potential	improvement through  regular revisions of the investment decisions. This concept is realized in terms of a certain  time modulation to an appropriate traditional static portfolio. 
+% 	In this framework, we utilize a novel numerical method 
+% 	 of discrete-time stochastic control 
+% 	 to obtain an optimal dynamic asset allocation in terms of simple, reliable, 
+% 	 and fast algorithms.
+\end{abstract}
+
+\input{introduction.tex}
+
+\input{methodology.tex}
+
+%---------------------------------------------------------------------------------
+%	Case Study
+<<case_study, child='case_study.Rnw'>>=
+@
+%---------------------------------------------------------------------------------
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% BIBLIOGRAPHY
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%\bibliographystyle{apalike}
+\bibliographystyle{plainnat}
+\bibliography{references}
+
+\end{document}
+
+
